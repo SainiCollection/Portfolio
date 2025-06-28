@@ -4,13 +4,15 @@ import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import Header from '../../Components/Layout/Header';
+
 import Modal from '../../Components/Common/Modal';
 import AppRoutes from '../../routes/AppRoutes'; // Correct path
 
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedTemplate } from '../../store/features/resume/resumeSlice';
+import Footer from '../../Components/Layout/Footer';
 
-const AppProvider = () => {
+const AppProvider = ({onToggleSidebar}) => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', message: '' });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -68,7 +70,7 @@ const AppProvider = () => {
         isSidebarOpen={isSidebarOpen}
       />
       {/* --- End Crucial --- */}
-
+<Footer/> {/*footer work later*/}
       <Box
         sx={{
           position: 'absolute',
@@ -96,6 +98,7 @@ const AppProvider = () => {
         title={modalContent.title}
         message={modalContent.message}
       />
+      
     </Box>
   );
 };
