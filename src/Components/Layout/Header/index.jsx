@@ -114,7 +114,7 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
           >
             Home
           </Button>
-          
+
           <Button
             onClick={() => window.location.href = `${redirect_url}/signup?appName=${app_name}&redirectUrl=${app_url}`}
             variant="text" // Text button style
@@ -147,13 +147,14 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleMenuClose}
-                onClick={handleMenuClose}
-                PaperProps={{
-                  elevation: 0,
-                  sx: {
-                    mt: 1.5,
-                    minWidth: 150,
-                    borderRadius: 2,
+                slotProps={{
+                  paper: {
+                    elevation: 0,
+                    sx: {
+                      mt: 1.5,
+                      minWidth: 150,
+                      borderRadius: 2,
+                    },
                   },
                 }}
               >
