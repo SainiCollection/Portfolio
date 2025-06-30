@@ -9,6 +9,7 @@ import BuildResumePage from '../../pages/BuildResumePage';
 import HeaderInputPage from '../../pages/HeaderInputPage';
 // Import ProtectedRoute component for authentication
 import ProtectedRoute from '../../Components/Layout/ProtectedRoute';
+import Practice from '../../pages/Practice';
 // --- Crucial: AppRoutes destructures handleChooseTemplate from its props ---
 const AppRoutes = ({ navigate, handleChooseTemplate, selectedTemplateId, isSidebarOpen }) => {
 // --- End Crucial ---
@@ -19,6 +20,7 @@ const AppRoutes = ({ navigate, handleChooseTemplate, selectedTemplateId, isSideb
       <Route path="/templates" element={<TemplateSelectionPage onChooseTemplate={handleChooseTemplate} />} /> {/* <--- Passed here */}
       {/* --- End Crucial --- */}
       <Route path="/build-resume" element={<BuildResumePage onNavigate={navigate} />} />
+      <Route path="/practice" element={<Practice />} />
 
       <Route element={<ProtectedRoute />}>
         <Route

@@ -1,12 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 // src/components/Layout/Header/index.jsx
 // This component renders the top application bar with navigation and sidebar toggle.
-import React from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; // Hamburger icon for sidebar toggle
 import DescriptionIcon from '@mui/icons-material/Description'; // Icon for "Resume Now." logo
 import { useNavigate, useSearchParams } from 'react-router-dom'; // Import useNavigate hook
 import { jwtDecode } from "jwt-decode"
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const Header = ({ onNavigate, onToggleSidebar }) => {
   // const navigateRouter = useNavigate(); // Get the navigate function from react-router-dom
@@ -15,44 +19,51 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
     // onNavigate is the universal navigation function from AppProvider
     // It already handles `useNavigate` and sidebar logic.
     onNavigate(path);
-
   };
-
   /////////
   const app_name = process.env.REACT_APP_APP_NAME
   const app_url = process.env.REACT_APP_APP_URL
   const redirect_url = process.env.REACT_APP_REDIRECT_URL
 
-  console.log(app_name)
-  console.log(app_url)
-  console.log(redirect_url)
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token')
-  if (token) {
-    localStorage.setItem("token", token);
-  }
-  console.log(token);
-  const tokens = localStorage.getItem(token)
+  const [decodedToken, setDecodedToken] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    const token = searchParams.get("token");
+    if (token) {
+      localStorage.setItem("token", token);
+      setIsLoggedIn(true);
+      // co=nole.log(decodedToken.userName);
+      try {
+        setDecodedToken(jwtDecode(token))
+      } catch (e) {
+        setDecodedToken(null);
+      }
 
 
-  // alert(token)
-  // const decodedToken = jwtDecode(token)
-  // debugger
-
-  // console.log(decodedToken.id, decodedToken.userName, decodedToken.email)
-  let decodedToken = null;
-  if (typeof token === 'string' && token.trim() !== '') {
-    try {
-      decodedToken = jwtDecode(token);
-
-      console.log(decodedToken.id, decodedToken.userName, decodedToken.email)
-      // console.log(decodedToken.id, decodedToken.userName, decodedToken.email);
-    } catch (e) {
-      console.error('Invalid token:', e);
     }
-  } else {
-    console.log('No token found in URL');
-  }
+  }, [searchParams]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setDecodedToken(null);
+    alert("logout successful");
+    const url = new URL(window.location);
+    url.searchParams.delete("token");
+    window.history.replaceState({}, document.title, url.pathname + url.search);
+  };
+
+  const handleProfileClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
   /////////////
 
 
@@ -103,51 +114,7 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
           >
             Home
           </Button>
-
-          {tokens ? (
-            <>
-              <Button
-                variant="text"
-                sx={{
-                  color: 'text.secondary',
-                  bgcolor: 'grey.200',
-                  '&:hover': { bgcolor: 'grey.300' },
-                  px: 2,
-                  py: 1,
-                }}
-              >
-                Profile
-              </Button>
-              <Button
-                onClick={() => { localStorage.removeItem("token"); }}
-                variant="text"
-                sx={{
-                  color: 'text.secondary',
-                  bgcolor: 'grey.200',
-                  '&:hover': { bgcolor: 'grey.300' },
-                  px: 2,
-                  py: 1,
-                }}
-              >
-                logout
-              </Button>
-            </>
-          ) : (
-            <Button
-              onClick={() => window.location.href = `${redirect_url}/login?appName=${app_name}&redirectUrl=${app_url}`}
-              variant="text"
-              sx={{
-                color: 'text.secondary',
-                bgcolor: 'grey.200',
-                '&:hover': { bgcolor: 'grey.300' },
-                px: 2,
-                py: 1,
-              }}
-            >
-              Login
-            </Button>
-          )}
-
+          
           <Button
             onClick={() => window.location.href = `${redirect_url}/signup?appName=${app_name}&redirectUrl=${app_url}`}
             variant="text" // Text button style
@@ -169,6 +136,50 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
           >
             Templates
           </Button>
+          {isLoggedIn ? (
+            <>
+              <IconButton onClick={handleProfileClick} sx={{ p: 0 }}>
+                <Avatar sx={{ bgcolor: 'primary.main' }}>
+                  {decodedToken?.userName?.[0]?.toUpperCase() || 'U'}
+                </Avatar>
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleMenuClose}
+                onClick={handleMenuClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    mt: 1.5,
+                    minWidth: 150,
+                    borderRadius: 2,
+                  },
+                }}
+              >
+                <MenuItem>Profile</MenuItem>
+                <MenuItem>Settings</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                {/* Add more MenuItem for future buttons */}
+              </Menu>
+            </>
+          ) : (
+            <Button
+              onClick={() => window.location.href = `${redirect_url}/login?appName=${app_name}&redirectUrl=${app_url}`}
+              variant="text"
+              sx={{
+                color: 'text.secondary',
+                bgcolor: 'grey.200',
+                '&:hover': { bgcolor: 'grey.300' },
+                px: 2,
+                py: 1,
+              }}
+            >
+              Login
+            </Button>
+          )}
+
+
         </Box>
       </Toolbar>
     </AppBar>
