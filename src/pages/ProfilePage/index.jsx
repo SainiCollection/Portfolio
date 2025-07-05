@@ -159,7 +159,6 @@ export default function ProfilePage() {
         <Typography variant="h6" gutterBottom sx={{ color: 'white', fontWeight: 'bold' }}>
           Contact Info
         </Typography>
-
         <Divider sx={{ borderColor: 'rgba(255,255,255,0.2)', mb: 3 }} />
         {/* aaa/ */}
         <Grid container spacing={4}>
