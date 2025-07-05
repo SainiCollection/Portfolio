@@ -2,7 +2,8 @@
 // This file configures the Redux store using Redux Toolkit.
 import { configureStore } from '@reduxjs/toolkit';
 import resumeReducer from './features/resume/resumeSlice'; // Import your resume slice reducer
-
+import userReducer from './features/userSlice';
+import userProfileReducer from '../store/features/userProfileSlice';
 // Configure the Redux store.
 // configureStore automatically sets up Redux DevTools Extension,
 // thunk middleware, and immutable state updates.
@@ -11,6 +12,9 @@ export const store = configureStore({
     // Define your reducers here. Each key will correspond to a slice of your state.
     // E.g., `state.resume` will be managed by `resumeReducer`.
     resume: resumeReducer,
+    user: userReducer,
+    userProfile: userProfileReducer,
+
     // Add other slices here as your application grows (e.g., user: userReducer)
   },
   // Middleware setup (optional, configureStore adds defaults automatically)

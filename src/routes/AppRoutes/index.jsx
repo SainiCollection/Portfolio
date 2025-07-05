@@ -10,6 +10,10 @@ import HeaderInputPage from '../../pages/HeaderInputPage';
 // Import ProtectedRoute component for authentication
 import ProtectedRoute from '../../Components/Layout/ProtectedRoute';
 import Practice from '../../pages/Practice';
+import ProfilePage from '../../pages/ProfilePage';
+import CreatePortfolioPage from '../../pages/CreatePortfolioPage';
+import UserForm from '../../pages/UserForm';
+import UserProfile from '../../Components/Common/UserProfile';
 // --- Crucial: AppRoutes destructures handleChooseTemplate from its props ---
 const AppRoutes = ({ navigate, handleChooseTemplate, selectedTemplateId, isSidebarOpen }) => {
 // --- End Crucial ---
@@ -27,11 +31,16 @@ const AppRoutes = ({ navigate, handleChooseTemplate, selectedTemplateId, isSideb
           path="/header-input"
           element={
             <HeaderInputPage
-              onNavigate={navigate}
+              onNavigate={navigate} 
               isSidebarOpen={isSidebarOpen}
             />
           }
         />
+        <Route path='/profile' element={<ProfilePage />}/>
+        <Route path='/createportfolio' element={<CreatePortfolioPage />}/>
+        <Route path='/userform' element={<UserForm />}/>
+        <Route path='/userprofile' element={<UserProfile />}/>
+
       </Route>
 
       <Route path="*" element={<HomePage />} />

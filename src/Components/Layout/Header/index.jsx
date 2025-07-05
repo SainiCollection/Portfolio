@@ -6,13 +6,20 @@ import React, { use, useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; // Hamburger icon for sidebar toggle
 import DescriptionIcon from '@mui/icons-material/Description'; // Icon for "Resume Now." logo
-import { useNavigate, useSearchParams } from 'react-router-dom'; // Import useNavigate hook
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'; // Import useNavigate hook
 import { jwtDecode } from "jwt-decode"
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser, clearUser } from '../../../store/features/userSlice';
+import { setUserProfile } from '../../../store/features/userProfileSlice';
 
 const Header = ({ onNavigate, onToggleSidebar }) => {
+  const user = useSelector(state => state.user);
+  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   // const navigateRouter = useNavigate(); // Get the navigate function from react-router-dom
   // Unified navigate handler for buttons that also updates sidebar
   const handleNavigationClick = (path) => {
@@ -29,7 +36,78 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
   const [searchParams] = useSearchParams();
   const [decodedToken, setDecodedToken] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [hasPortfolio, setHasPortfolio] = useState(null);
   const open = Boolean(anchorEl);
+
+  // const [data, setData] = useState("jatin_451");
+
+  // console.log(decodedToken?.userName, decodedToken?.email, decodedToken?.id);
+  //////////
+
+  // useEffect(() => {
+
+  //   const fetchUserProfile = async () => {
+  //     try {
+  //       const url = `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/all-details/manoj_382`;
+  //       const response = await axios.get(url);
+  //       dispatch(setUserProfile(response.data)); // store all payload data in redux
+  //       console.log("Fetched user profile:", response.data);
+  //     } catch (e) {
+  //       console.log("error in userprofile", e);
+  //       dispatch(setUserProfile(null));
+  //     }
+  //   };
+  //   if (user.userName) {
+  //     fetchUserProfile();
+  //   }
+  // }, [user.userName, dispatch]);
+
+
+  useEffect(() => {
+    dispatch(setUser({ userName: decodedToken?.userName, email: decodedToken?.email, id: decodedToken?.id }));
+    if (isLoggedIn && decodedToken?.userName) {
+      const fetchUser = async () => {
+        try {
+          const user = await axios.get(`https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/user-details/${decodedToken?.userName}`);
+          dispatch(setUserProfile(user.data)); // store all payload data in redux
+
+          if (user) {
+            setHasPortfolio(true);
+          }
+          else {
+            setHasPortfolio(false);
+          }
+        } catch (error) {
+          console.log("Server error->", error)
+        }
+      }
+      fetchUser();
+    } else {
+      // dispatch(clearUser());
+      // setHasPortfolio(false);
+    };
+  }, [isLoggedIn, decodedToken?.userName, dispatch]);
+
+  /////////////
+  useEffect(() => {
+    // Fetch all users details on mount
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/all-users-details");
+        console.log(response.data);
+        // setData(response.data); // Uncomment if you want to store the data
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // if (data === decodedToken?.userName) {
+  //   console.log("Name matched", data);
+  // } else {
+  //   console.log("Name not matched");
+  // }
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -66,6 +144,7 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
   };
   /////////////
 
+  console.log("this0", hasPortfolio);
 
   return (
     // AppBar is a Material-UI component for the top application bar.
@@ -136,34 +215,53 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
           >
             Templates
           </Button>
+
+
+
           {isLoggedIn ? (
-            <>
-              <IconButton onClick={handleProfileClick} sx={{ p: 0 }}>
-                <Avatar sx={{ bgcolor: 'primary.main' }}>
-                  {decodedToken?.userName?.[0]?.toUpperCase() || 'U'}
-                </Avatar>
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleMenuClose}
-                slotProps={{
-                  paper: {
-                    elevation: 0,
-                    sx: {
-                      mt: 1.5,
-                      minWidth: 150,
-                      borderRadius: 2,
+            hasPortfolio ? (
+              <>
+                <IconButton onClick={handleProfileClick} sx={{ p: 0 }}>
+                  <Avatar sx={{ bgcolor: 'primary.main' }}>
+                    {decodedToken?.userName?.[0]?.toUpperCase() || 'not'}
+                  </Avatar>
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleMenuClose}
+                  slotProps={{
+                    paper: {
+                      elevation: 0,
+                      sx: {
+                        mt: 1.5,
+                        minWidth: 150,
+                        borderRadius: 2,
+                      },
                     },
-                  },
-                }}
-              >
-                <MenuItem>Profile</MenuItem>
-                <MenuItem>Settings</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                {/* Add more MenuItem for future buttons */}
-              </Menu>
-            </>
+                  }}
+                >
+                  <MenuItem>
+                    <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>Profile</Link>
+                  </MenuItem>
+                  <MenuItem>Settings</MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleLogout}>Logout</Button>
+                <Button
+                  onClick={() => handleNavigationClick('/userform')}
+                  variant="contained"
+                  color="primary"
+                  sx={{ px: 2, py: 1 }}
+                >
+                  Create Portfolio
+                </Button>
+              </>
+
+            )
           ) : (
             <Button
               onClick={() => window.location.href = `${redirect_url}/login?appName=${app_name}&redirectUrl=${app_url}`}
