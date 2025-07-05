@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Paper, Typography, TextField, Grid, Button, Avatar, Stack,
   Radio, RadioGroup, FormControlLabel, LinearProgress, Snackbar, Alert
@@ -7,8 +6,12 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import { setUserProfile } from '../../store/features/userProfileSlice';
+import { useNavigate } from 'react-router-dom';
+
+
 
 // 1. Validation schema using Yup
 const validationSchema = Yup.object({
@@ -25,45 +28,56 @@ const validationSchema = Yup.object({
   country: Yup.string().required('Country is required'),
 });
 
-const initialValues = {
-  profilePhoto: '',
-  firstName: '',
-  lastName: '',
-  dob: '',
-  gender: '',
-  designation: '',
-  email: '',
-  phoneNo: '',
-  socialLink: '',
-  city: '',
-  state: '',
-  pinCode: '',
-  country: '',
-};
-
 function UserForm() {
   const [step, setStep] = useState(1);
   const totalSteps = 3;
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const user = useSelector(state => state.user);
-  console.log("this is from ", user.userName); // fix typo: userName not username
+  const fetchedUser = useSelector(state => state.userProfile?.data?.fetchedUsed);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [info, setInfo] = useState();
+
+
+  useEffect(() => {
+    console.log("Editing mode:", !!fetchedUser);
+    setInfo(!!fetchedUser ? "Update" : "Create");
+  }, [fetchedUser]);
 
   // 2. Handle file upload
   const handleFileChange = (e, setFieldValue) => {
     setFieldValue('profilePhoto', e.target.files[0]);
     console.log(`=>=>${e.target.files[0]}`);
+  };
 
+  const isEdit = !!fetchedUser;
+
+  const initialValues = {
+    profilePhoto: '',
+    firstName: fetchedUser?.firstName || '',
+    lastName: fetchedUser?.lastName || '',
+    dob: fetchedUser?.dob || '',
+    gender: fetchedUser?.gender || '',
+    designation: fetchedUser?.designation || '',
+    email: fetchedUser?.email || '',
+    phoneNo: fetchedUser?.phoneNo || '',
+    socialLink: fetchedUser?.socialLink || '',
+    city: fetchedUser?.city || '',
+    state: fetchedUser?.state || '',
+    pinCode: fetchedUser?.pinCode || '',
+    country: fetchedUser?.country || '',
   };
 
   // 3. Handle form submission
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    console.log(`this is =>${typeof (values.firstName)}`);
+    console.log("sss", fetchedUser);
+
     try {
       const data = new FormData();
-      data.append('firstName', values.firstName);
+      data.append('firstName', values?.firstName);
       data.append('lastName', values.lastName);
-      data.append('dob', values.dob);
+      data.append('dob', values?.dob);
       data.append('gender', values.gender);
       data.append('designation', values.designation);
       data.append('email', values.email);
@@ -76,26 +90,39 @@ function UserForm() {
       data.append('userName', user.userName);
       data.append('userId', Number(user.id));
       if (values.profilePhoto) {
-        data.append('profilePhoto', values.profilePhoto);
-        console.log('uploading file ', values.profilePhoto.name);
+        data.append('profilePhoto', values?.profilePhoto);
       }
-      const response = await axios.post(
-        "https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/register",
-        data,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
+
+
+      const url = isEdit
+        ? `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/update-user`
+        // ? `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/update-details/${user.userName}`
+        : `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/register`
+
+      const method = isEdit ? 'put' : 'post';
+
+      const res = await axios[method](url, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (isEdit) {
+        const updated = await axios.get(`https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/user-details/${user.userName}`);
+        dispatch(setUserProfile(updated.data));
+      }
+
+      dispatch(setUserProfile(res.data));
+      navigate('/profile');
       setSuccess(true);
       setError('');
       resetForm();
       setStep(1);
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message || 'Submission failed');
       setSuccess(false);
     }
     setSubmitting(false);
   };
 
-  // 4. Render the form
+  // UI rendering unchanged
   return (
     <Box sx={{
       bgcolor: '#f5f6f8',
@@ -112,7 +139,7 @@ function UserForm() {
         my: 'auto'
       }}>
         <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
-          Create Your Profile
+          {info} Your Profile
         </Typography>
         <LinearProgress
           variant="determinate"

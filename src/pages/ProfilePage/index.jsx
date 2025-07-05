@@ -20,12 +20,12 @@ import { useSelector } from 'react-redux';
 
 const user1 = {
   profilePhoto: '', // Add image URL or leave blank
-  firstName: 'w',
-  lastName: 'Deo',
-  designation: 'Frontend Developer',
-  dob: '2003-05-19',
-  gender: 'Male',
-  phoneNo: '9876543210',
+  firstName: '',
+  lastName: '',
+  designation: '',
+  dob: '',
+  gender: '',
+  phoneNo: '',
   email: 'john@example.com',
   socialLink: 'https://linkedin.com/in/johndeo',
   city: 'New York',
@@ -37,20 +37,25 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   // const user = useSelector(state => state.user);
   const userProfile = useSelector(state => state.userProfile.data);
-  console.log("ttttttt",userProfile.fetchedUsed.profilePhoto);
+  // console.log("ttttttt", userProfile.fetchedUsed.profilePhoto);
 
-  const editProfile = ()=>{
-    console.log("youclik");
-     navigate("/userform");
-    
+  const editProfile = () => {
+    navigate("/userform", { state: { isUpdate: true } });
+  };
+  const signOut = () => {
+    localStorage.removeItem("token")
+    navigate("/")
   }
-  
+
+
   // console.log("this is from  ", user.userName);
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(to bottom right, #1a73e8, #8e2de2)',
+        // background: 'linear-gradient(to bottom right, #1A72BF, #8E2F21)',
+        background: 'linear-gradient(to bottom right, #1e1e2f, #3c3c78)',
+
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -77,6 +82,7 @@ export default function ProfilePage() {
             startIcon={<EditIcon />}
             onClick={editProfile}
             variant="outlined"
+
             sx={{
               color: 'white',
               borderColor: 'white',
@@ -90,6 +96,7 @@ export default function ProfilePage() {
           <Button
             startIcon={<LogoutIcon />}
             variant="outlined"
+            onClick={signOut}
             sx={{
               color: 'white',
               borderColor: 'white',
@@ -106,8 +113,8 @@ export default function ProfilePage() {
       {/* Hero Section */}
       <Box sx={{ textAlign: 'center', color: 'white', mb: 2 }}>
         <Avatar
-          src={userProfile.fetchedUsed.profilePhoto || undefined}
-          alt={userProfile.fetchedUsed.firstName}
+          src={userProfile?.fetchedUsed?.profilePhoto || undefined}
+          alt={userProfile?.fetchedUsed?.firstName}
           sx={{
             width: 140,
             height: 140,
@@ -122,10 +129,11 @@ export default function ProfilePage() {
           }}
         />
         <Typography variant="h4" fontWeight="bold" sx={{ fontFamily: 'Inter, sans-serif' }}>
-          {userProfile.fetchedUsed.firstName} {userProfile.fetchedUsed.lastName}
+          {userProfile?.fetchedUsed?.firstName || 'First'} {userProfile?.fetchedUsed?.lastName || 'Last'}
         </Typography>
+
         <Typography variant="subtitle1" sx={{ color: '#f0f0f0', fontFamily: 'Inter, sans-serif' }}>
-          {userProfile.fetchedUsed.designation}
+          {userProfile?.fetchedUsed?.designation}
         </Typography>
       </Box>
 
@@ -156,14 +164,14 @@ export default function ProfilePage() {
 
         <Grid container spacing={4}>
           {[
-            ['Date of Birth', userProfile.fetchedUsed.dob],
-            ['Gender', userProfile.fetchedUsed.gender],
-            ['Phone', userProfile.fetchedUsed.phoneNo],
-            ['Email', userProfile.fetchedUsed.email],
+            ['Date of Birth', userProfile?.fetchedUsed?.dob],
+            ['Gender', userProfile?.fetchedUsed?.gender],
+            ['Phone', userProfile?.fetchedUsed?.phoneNo],
+            ['Email', userProfile?.fetchedUsed?.email],
             ['Social Link', user1.socialLink],
-            ['City', userProfile.fetchedUsed.city],
-            ['State', userProfile.fetchedUsed.state],
-            ['Pincode', userProfile.fetchedUsed.pinCode],
+            ['City', userProfile?.fetchedUsed?.city],
+            ['State', userProfile?.fetchedUsed?.state],
+            ['Pincode', userProfile?.fetchedUsed?.pinCode],
           ].map(([label, value]) => (
             <Grid item xs={12} sm={6} md={4} key={label}>
               <Typography variant="caption" sx={{ color: '#ccc' }}>
@@ -199,8 +207,10 @@ export default function ProfilePage() {
           </Button>
           <Button
             variant="contained"
+            component={Link}
+            to="/createportfolio"
             sx={{
-              background: 'linear-gradient(to right, #8e2de2, #1a73e8)',
+              background: 'linear-gradient(to right, #5f72be, #9b23ea)',
               color: 'white',
               px: 4,
               py: 1.5,
@@ -208,15 +218,16 @@ export default function ProfilePage() {
               fontWeight: 600,
               textTransform: 'none',
               fontFamily: 'Inter, sans-serif',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+              boxShadow: '0 6px 15px rgba(0,0,0,0.3)',
               '&:hover': {
-                boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
+                // background: 'linear-gradient(to right, #4a5bb5, #8e21d1)',
+                background: 'linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)',
+
+                boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
               },
             }}
           >
-            <Link to="/createportfolio">
-              Create Portfolio
-            </Link>
+            Create Portfolio
           </Button>
         </Box>
       </Box>

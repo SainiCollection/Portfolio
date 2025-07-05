@@ -6,7 +6,7 @@ import React, { use, useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; // Hamburger icon for sidebar toggle
 import DescriptionIcon from '@mui/icons-material/Description'; // Icon for "Resume Now." logo
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'; // Import useNavigate hook
+import { Link,useNavigate, useSearchParams } from 'react-router-dom'; // Import useNavigate hook
 import { jwtDecode } from "jwt-decode"
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -37,6 +37,7 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
   const [decodedToken, setDecodedToken] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [hasPortfolio, setHasPortfolio] = useState(null);
+ const navigate = useNavigate()
   const open = Boolean(anchorEl);
 
   // const [data, setData] = useState("jatin_451");
@@ -133,6 +134,7 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
     const url = new URL(window.location);
     url.searchParams.delete("token");
     window.history.replaceState({}, document.title, url.pathname + url.search);
+    navigate("/")
   };
 
   const handleProfileClick = (event) => {
