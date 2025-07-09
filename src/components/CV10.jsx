@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   ThemeProvider,
   createTheme,
@@ -10,9 +10,14 @@ import {
   Chip,
   Avatar,
   IconButton,
+  Button,
+  Container,
+  List,
+  ListItem,
 } from "@mui/material";
-import { LinkedIn, GitHub, LightMode, DarkMode } from "@mui/icons-material";
-import styled from "styled-components";
+import { LinkedIn, GitHub, LightMode, DarkMode, Print, Download } from "@mui/icons-material";
+import styled from "@emotion/styled";
+import { toPng } from "html-to-image";
 
 // Themes
 const themes = [
@@ -50,10 +55,55 @@ const themes = [
   },
 ];
 
-const Container = styled(Box)`
+const CVContainer = styled(Box)`
   max-width: 900px;
   margin: auto;
   padding: 2rem;
+  position: relative;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background: ${({ theme }) => theme.palette.background.default};
+
+  @media print {
+    box-shadow: none;
+    padding: 1.5rem !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+`;
+
+const Section = styled(Box)`
+  margin-bottom: 2rem;
+`;
+
+const SectionTitle = styled(Typography)`
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 1px;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: ${({ theme }) => theme.palette.primary.main};
+  }
+`;
+
+const PrintHide = styled(Box)`
+  @media print {
+    display: none !important;
+  }
+`;
+
+const ExperienceItem = styled(Box)`
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-left: 16px;
+  border-left: 1px solid ${({ theme }) => theme.palette.primary.main};
 `;
 
 const PageNumber = styled(Box)`
@@ -65,106 +115,315 @@ const PageNumber = styled(Box)`
 export default function LuxurySerifBWCV() {
   const [themeIndex, setThemeIndex] = useState(0);
   const active = themes[themeIndex];
+  const cvRef = useRef();
 
   const theme = createTheme({
     palette: {
       mode: "light",
-      background: { default: active.bg },
+      background: { default: active.bg, paper: active.bg },
       text: { primary: active.text },
       primary: { main: active.accent },
     },
     typography: {
       fontFamily: active.bodyFont,
-      h3: { fontFamily: active.headerFont, fontWeight: 700 },
-      h4: { fontFamily: active.headerFont, fontWeight: 700 },
-      h5: { fontFamily: active.headerFont, fontWeight: 600 },
+      h3: { 
+        fontFamily: active.headerFont, 
+        fontWeight: 700,
+        letterSpacing: 1.5
+      },
+      h4: { 
+        fontFamily: active.headerFont, 
+        fontWeight: 700,
+        letterSpacing: 1
+      },
+      h5: { 
+        fontFamily: active.headerFont, 
+        fontWeight: 600,
+        letterSpacing: 1
+      },
+      body1: { lineHeight: 1.6 }
     },
   });
 
   const nextTheme = () => setThemeIndex((prev) => (prev + 1) % themes.length);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownload = () => {
+    if (cvRef.current) {
+      toPng(cvRef.current, { cacheBust: true })
+        .then((dataUrl) => {
+          const link = document.createElement("a");
+          link.download = "tanya-roy-cv.png";
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((err) => {
+          console.error("Error downloading CV:", err);
+        });
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container>
-        {/* Hero Block */}
-        <Box textAlign="center">
-          <Typography variant="h3">Tanya Roy</Typography>
-          <Typography>Phone: +91 9123456789 | tanya.roy@email.com</Typography>
-          <Typography>Bhubaneswar, Odisha, India</Typography>
-          <IconButton color="primary"><LinkedIn /></IconButton>
-          <IconButton color="primary"><GitHub /></IconButton>
-          <IconButton onClick={nextTheme} color="primary">
+        <PrintHide display="flex" justifyContent="flex-end" mb={2}>
+          <IconButton onClick={nextTheme} color="primary" sx={{ mr: 1 }}>
             {themeIndex % 2 === 0 ? <DarkMode /> : <LightMode />}
           </IconButton>
-        </Box>
+          <Button 
+            variant="outlined" 
+            startIcon={<Print />} 
+            onClick={handlePrint}
+            sx={{ mr: 1 }}
+          >
+            Print
+          </Button>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            startIcon={<Download />} 
+            onClick={handleDownload}
+          >
+            Download
+          </Button>
+        </PrintHide>
 
-        {/* Summary Quote */}
-        <Divider sx={{ my: 4, borderWidth: 2 }} />
-        <Typography
-          variant="h5"
-          sx={{
-            fontStyle: "italic",
-            borderLeft: `6px solid ${active.accent}`,
-            pl: 2,
-          }}
-        >
-          “Luxury never goes out of style. Neither does clean design.”
-        </Typography>
-        <Divider sx={{ my: 4, borderWidth: 2 }} />
-
-        {/* Skills */}
-        <Typography variant="h5">Skills</Typography>
-        <ul>
-          {["Design Strategy", "UX Research", "Prototyping"].map((skill) => (
-            <li key={skill}>
-              <Typography>{skill}</Typography>
-            </li>
-          ))}
-        </ul>
-
-        {/* Languages & Interests */}
-        <Box mt={4}>
-          <Typography variant="h5">Languages & Interests</Typography>
-          <Box mt={1} display="flex" gap={1} flexWrap="wrap">
-            <Chip label="English" />
-            <Chip label="Hindi" />
-            <Chip label="Odia" />
-            <Chip label="✈️ Travel" />
-            <Chip label="🚗 Luxury Cars" />
-            <Chip label="🎨 Art" />
+        <CVContainer ref={cvRef}>
+          {/* Hero Block */}
+          <Box textAlign="center" mb={4}>
+            <Typography variant="h3" sx={{ letterSpacing: 2 }}>
+              Tanya Roy
+            </Typography>
+            <Typography variant="h6" color="textSecondary" mt={1}>
+              Luxury Brand Creative Director
+            </Typography>
+            <Typography mt={1}>Phone: +91 9123456789</Typography>
+            <Typography>Email: tanya.roy@email.com</Typography>
+            <Typography>Bhubaneswar, Odisha, India</Typography>
+            <Box mt={1}>
+              <IconButton color="primary"><LinkedIn /></IconButton>
+              <IconButton color="primary"><GitHub /></IconButton>
+            </Box>
           </Box>
-        </Box>
 
-        <PageNumber>— Page 1 —</PageNumber>
+          {/* Summary Quote */}
+          <Divider sx={{ my: 4, borderWidth: 2, borderColor: "primary.main" }} />
+          <Typography
+            variant="h5"
+            sx={{
+              fontStyle: "italic",
+              borderLeft: `6px solid ${active.accent}`,
+              pl: 2,
+              textAlign: "center",
+              maxWidth: "700px",
+              margin: "auto",
+              letterSpacing: 0.5
+            }}
+          >
+            “Luxury never goes out of style. Neither does clean design.”
+          </Typography>
+          <Divider sx={{ my: 4, borderWidth: 2, borderColor: "primary.main" }} />
 
-        <Divider sx={{ my: 4, borderWidth: 2 }} />
+          <Grid container spacing={4}>
+            {/* Left Column */}
+            <Grid item xs={12} md={6}>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Professional Profile</SectionTitle>
+                <Typography>
+                  Creative Director with 10+ years of experience in luxury brand design. 
+                  Specialized in creating timeless visual identities for high-end fashion 
+                  and lifestyle brands. Passionate about craftsmanship and attention to detail.
+                </Typography>
+              </Section>
 
-        {/* Page 2 */}
-        <Typography variant="h5">Experience</Typography>
-        <Typography>Creative Director @ Luxe Studio (2020–Now)</Typography>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Core Competencies</SectionTitle>
+                <List dense>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>— Brand Strategy & Positioning</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>— Luxury Visual Identity Systems</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>— Art Direction & Photography</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>— High-End Packaging Design</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>— Editorial Design & Typography</Typography>
+                  </ListItem>
+                </List>
+              </Section>
 
-        <Typography variant="h5" mt={4}>Education</Typography>
-        <Typography>M.Des, NID</Typography>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Technical Skills</SectionTitle>
+                <Grid container spacing={1}>
+                  {[
+                    "Adobe Creative Suite", "Figma", "Sketch", 
+                    "InDesign", "Photoshop", "Illustrator",
+                    "Premiere Pro", "After Effects"
+                  ].map((skill) => (
+                    <Grid item key={skill}>
+                      <Chip label={skill} variant="outlined" />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Section>
 
-        <Typography variant="h5" mt={4}>Projects</Typography>
-        <Typography>Luxury Branding Kit</Typography>
-        <Typography>High-End Website</Typography>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Education</SectionTitle>
+                <Box mb={2}>
+                  <Typography fontWeight={600}>Master of Design</Typography>
+                  <Typography>National Institute of Design | 2010-2012</Typography>
+                  <Typography color="textSecondary">Specialization: Visual Communication</Typography>
+                </Box>
+                <Box>
+                  <Typography fontWeight={600}>BFA in Graphic Design</Typography>
+                  <Typography>College of Art, Delhi | 2006-2010</Typography>
+                </Box>
+              </Section>
+            </Grid>
 
-        <Typography variant="h5" mt={4}>Certificates & Achievements</Typography>
-        <Typography>Google UX Design</Typography>
-        <Typography>Speaker at Design Days</Typography>
+            {/* Right Column */}
+            <Grid item xs={12} md={6}>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Professional Experience</SectionTitle>
+                
+                <ExperienceItem>
+                  <Typography variant="subtitle1" fontWeight={600}>Creative Director</Typography>
+                  <Typography color="primary" fontStyle="italic">Luxe Studio | 2020–Present</Typography>
+                  <Typography variant="body2" mt={1}>
+                    • Lead creative vision for luxury fashion clients including Gucci, Dior, and Hermès<br/>
+                    • Developed brand identities increasing client recognition by 40%<br/>
+                    • Directed photoshoots with world-renowned photographers<br/>
+                    • Managed team of 12 designers and art directors
+                  </Typography>
+                </ExperienceItem>
+                
+                <ExperienceItem>
+                  <Typography variant="subtitle1" fontWeight={600}>Senior Art Director</Typography>
+                  <Typography color="primary" fontStyle="italic">Vogue India | 2015–2020</Typography>
+                  <Typography variant="body2" mt={1}>
+                    • Designed 24+ magazine covers and editorial spreads<br/>
+                    • Created visual concepts for high-profile fashion features<br/>
+                    • Collaborated with luxury brands on special editions<br/>
+                    • Won 3 design awards for innovative layouts
+                  </Typography>
+                </ExperienceItem>
+                
+                <ExperienceItem>
+                  <Typography variant="subtitle1" fontWeight={600}>Design Lead</Typography>
+                  <Typography color="primary" fontStyle="italic">Taj Hotels | 2012–2015</Typography>
+                  <Typography variant="body2" mt={1}>
+                    • Developed brand identity for luxury hotel chain<br/>
+                    • Designed premium packaging for hospitality products<br/>
+                    • Created art installations for hotel lobbies and suites
+                  </Typography>
+                </ExperienceItem>
+              </Section>
 
-        <Typography variant="h5" mt={4}>Awards</Typography>
-        <Typography>🏆 Top Designer 2023</Typography>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Key Projects</SectionTitle>
+                <Box mb={2}>
+                  <Typography fontWeight={600}>Luxury Branding Kit</Typography>
+                  <Typography variant="body2">
+                    Comprehensive identity system for high-end watchmaker, including packaging, 
+                    typography, and retail experience design.
+                  </Typography>
+                </Box>
+                <Box mb={2}>
+                  <Typography fontWeight={600}>Artisan Perfume Collection</Typography>
+                  <Typography variant="body2">
+                    Luxury packaging and visual identity for niche fragrance line using 
+                    sustainable materials and artisanal techniques.
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography fontWeight={600}>Heritage Jewelry Campaign</Typography>
+                  <Typography variant="body2">
+                    Art direction for 200-year-old jewelry brand, blending tradition with 
+                    contemporary aesthetics.
+                  </Typography>
+                </Box>
+              </Section>
+            </Grid>
+          </Grid>
 
-        <PageNumber>— Page 2 —</PageNumber>
+          <Grid container spacing={4} mt={1}>
+            <Grid item xs={12} md={6}>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Languages</SectionTitle>
+                <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+                  <Chip label="English (Fluent)" color="primary" />
+                  <Chip label="Hindi (Native)" color="primary" />
+                  <Chip label="Odia (Native)" color="primary" />
+                  <Chip label="French (Intermediate)" color="primary" />
+                </Box>
+              </Section>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Interests</SectionTitle>
+                <Box mt={1} display="flex" gap={1} flexWrap="wrap">
+                  <Chip label="✈️ Travel" color="primary" />
+                  <Chip label="🚗 Luxury Cars" color="primary" />
+                  <Chip label="🎨 Art Collection" color="primary" />
+                  <Chip label="📚 Design History" color="primary" />
+                  <Chip label="🍷 Wine Tasting" color="primary" />
+                </Box>
+              </Section>
+            </Grid>
+          </Grid>
 
-        <Divider sx={{ my: 4, borderWidth: 2 }} />
+          <Grid container spacing={4} mt={1}>
+            <Grid item xs={12} md={6}>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Certifications</SectionTitle>
+                <List dense>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>• Google UX Design Professional Certificate</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>• Luxury Brand Management (Parsons)</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>• Advanced Typography (Central Saint Martins)</Typography>
+                  </ListItem>
+                </List>
+              </Section>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Section>
+                <SectionTitle variant="h5" color="primary">Awards & Recognition</SectionTitle>
+                <List dense>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>🏆 Top Designer Award 2023 (Design India)</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>🏅 Luxury Creative of the Year 2022 (Luxe Magazine)</Typography>
+                  </ListItem>
+                  <ListItem sx={{ px: 0 }}>
+                    <Typography>⭐️ 10 Under 40 Design Leaders (Vogue India)</Typography>
+                  </ListItem>
+                </List>
+              </Section>
+            </Grid>
+          </Grid>
 
-        <Box textAlign="center" mt={2}>
-          <Typography variant="caption">Signature: Tanya Roy</Typography>
-        </Box>
+          <Divider sx={{ my: 4, borderWidth: 2, borderColor: "primary.main" }} />
+          <Box textAlign="center" mt={2}>
+            <Typography variant="h6" sx={{ fontFamily: active.headerFont }}>
+              Tanya Roy
+            </Typography>
+            <Typography variant="caption">Creative Director & Brand Strategist</Typography>
+          </Box>
+        </CVContainer>
       </Container>
     </ThemeProvider>
   );

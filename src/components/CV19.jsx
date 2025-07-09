@@ -11,6 +11,9 @@ import html2canvas from 'html2canvas';
 // Styled components
 const Section = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
+  '@media print': {
+    marginBottom: theme.spacing(1.5),
+  }
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -19,6 +22,11 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   textTransform: 'uppercase',
   letterSpacing: '1px',
+  '@media print': {
+    paddingBottom: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
+    fontSize: '1.3rem !important',
+  }
 }));
 
 const SkillBadge = styled(Paper)(({ theme }) => ({
@@ -33,7 +41,18 @@ const SkillBadge = styled(Paper)(({ theme }) => ({
   display: 'inline-block',
   margin: theme.spacing(0.5),
   fontSize: '0.85rem',
+  '@media print': {
+    padding: '0.2rem 0.8rem !important',
+    fontSize: '0.75rem !important'
+  }
 }));
+
+// Print utility style
+const noPrintStyle = {
+  '@media print': {
+    display: 'none'
+  }
+};
 
 // CV Template Component
 const CVTemplate = () => {
@@ -78,7 +97,12 @@ const CVTemplate = () => {
 
   const downloadPDF = () => {
     const input = cvRef.current;
-    html2canvas(input, { scale: 3 }).then(canvas => {
+    html2canvas(input, { 
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      backgroundColor: darkMode ? '#1e1e1e' : '#ffffff'
+    }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgProps = pdf.getImageProperties(imgData);
@@ -195,8 +219,24 @@ const CVTemplate = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Control Panel */}
+      {/* Global print styles */}
+      <style>
+        {`
+          @media print {
+            @page {
+              margin: 0;
+            }
+            body {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              margin: 0 !important;
+            }
+          }
+        `}
+      </style>
+      
+      <Container maxWidth="lg" sx={{ py: 4, '@media print': { py: 0 } }}>
+        {/* Control Panel - hidden during print */}
         <Box sx={{ 
           mb: 4, 
           display: 'flex', 
@@ -207,7 +247,8 @@ const CVTemplate = () => {
           p: 3,
           borderRadius: 2,
           bgcolor: 'background.paper',
-          boxShadow: 2
+          boxShadow: 2,
+          ...noPrintStyle
         }}>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
             Professional CV Builder
@@ -289,31 +330,51 @@ const CVTemplate = () => {
               width: '100%',
               height: '100%',
               margin: 0,
-              padding: '20mm',
+              padding: '15mm',
+              '& h1': { fontSize: '1.8rem !important' },
+              '& h2': { fontSize: '1.3rem !important' },
+              '& h3': { fontSize: '1.1rem !important' },
+              '& h4': { fontSize: '0.95rem !important' },
+              '& .MuiTypography-body1': { fontSize: '0.8rem !important' },
+              '& .MuiTypography-body2': { fontSize: '0.75rem !important' },
+              '& .MuiGrid-item': { padding: '0.25rem !important' },
             }
           }}
         >
           {/* Header */}
-          <Box sx={{ mb: 4, borderBottom: '2px solid', borderColor: 'primary.main', pb: 2 }}>
-            <Typography variant="h1" gutterBottom sx={{ color: 'primary.main' }}>
+          <Box sx={{ 
+            mb: 4, 
+            borderBottom: '2px solid', 
+            borderColor: 'primary.main', 
+            pb: 2,
+            '@media print': {
+              mb: 2,
+              pb: 1,
+            }
+          }}>
+            <Typography variant="h1" gutterBottom sx={{ color: 'primary.main', '@media print': { mb: 1 } }}>
               {cvData.fullName}
             </Typography>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} sx={{ '@media print': { spacing: 0 } }}>
               <Grid item xs={12} md={8}>
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{ '@media print': { fontSize: '0.75rem !important' } }}>
                   <strong>Location:</strong> {cvData.city}, {cvData.state}, {cvData.country}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{ '@media print': { fontSize: '0.75rem !important' } }}>
                   <strong>Phone:</strong> {cvData.phone}
                 </Typography>
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{ '@media print': { fontSize: '0.75rem !important' } }}>
                   <strong>Email:</strong> {cvData.email}
                 </Typography>
               </Grid>
               <Grid item xs={12} md={4}>
                 <Box>
                   {cvData.socialLinks.map((link, index) => (
-                    <Typography key={index} variant="body1">
+                    <Typography 
+                      key={index} 
+                      variant="body1"
+                      sx={{ '@media print': { fontSize: '0.75rem !important' } }}
+                    >
                       <strong>{link.name}:</strong> {link.url}
                     </Typography>
                   ))}
@@ -322,7 +383,7 @@ const CVTemplate = () => {
             </Grid>
           </Box>
 
-          <Grid container spacing={4}>
+          <Grid container spacing={4} sx={{ '@media print': { spacing: 1 } }}>
             {/* Left Column */}
             <Grid item xs={7}>
               {/* Summary */}
@@ -335,14 +396,22 @@ const CVTemplate = () => {
               <Section>
                 <SectionTitle variant="h2">Work Experience</SectionTitle>
                 {cvData.experience.map((exp, index) => (
-                  <Box key={index} sx={{ mb: 3 }}>
+                  <Box key={index} sx={{ mb: 3, '@media print': { mb: 1.5 } }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="h3">{exp.title}</Typography>
                       <Typography variant="body2" color="text.secondary">{exp.period}</Typography>
                     </Box>
                     <Typography variant="body1" fontStyle="italic" color="primary.main">{exp.company}</Typography>
                     <Typography variant="body1" sx={{ mt: 1 }}>{exp.description}</Typography>
-                    <Box component="ul" sx={{ pl: 2, mt: 1, listStyleType: 'square' }}>
+                    <Box component="ul" sx={{ 
+                      pl: 2, 
+                      mt: 1, 
+                      listStyleType: 'square',
+                      '@media print': {
+                        mt: 0.5,
+                        pl: 1.5,
+                      }
+                    }}>
                       {exp.achievements.map((achievement, i) => (
                         <li key={i}>
                           <Typography variant="body1">{achievement}</Typography>
@@ -357,7 +426,7 @@ const CVTemplate = () => {
               <Section>
                 <SectionTitle variant="h2">Projects</SectionTitle>
                 {cvData.projects.map((project, index) => (
-                  <Box key={index} sx={{ mb: 2 }}>
+                  <Box key={index} sx={{ mb: 2, '@media print': { mb: 1 } }}>
                     <Typography variant="h4" fontWeight="bold">{project.name}</Typography>
                     <Typography variant="body2" fontStyle="italic" color="text.secondary">{project.technologies}</Typography>
                     <Typography variant="body1" sx={{ mt: 0.5 }}>{project.description}</Typography>
@@ -384,7 +453,7 @@ const CVTemplate = () => {
               <Section>
                 <SectionTitle variant="h2">Education</SectionTitle>
                 {cvData.education.map((edu, index) => (
-                  <Box key={index} sx={{ mb: 2 }}>
+                  <Box key={index} sx={{ mb: 2, '@media print': { mb: 1 } }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="h3">{edu.degree}</Typography>
                       <Typography variant="body2" color="text.secondary">{edu.period}</Typography>

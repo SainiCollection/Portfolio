@@ -38,22 +38,6 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   letterSpacing: "1px",
 }));
 
-const SkillBadge = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(0.5, 1.5),
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.primary.dark
-      : theme.palette.primary.light,
-  color: theme.palette.getContrastText(
-    theme.palette.mode === "dark"
-      ? theme.palette.primary.dark
-      : theme.palette.primary.light
-  ),
-  borderRadius: "20px",
-  display: "inline-block",
-  margin: theme.spacing(0.5),
-  fontSize: "0.85rem",
-}));
 
 // CV Template Component
 const CVTemplate = () => {

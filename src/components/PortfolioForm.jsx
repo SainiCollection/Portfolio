@@ -867,9 +867,7 @@ const CVForm = ({ onSubmit }) => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                 <FavoriteIcon sx={{ color: 'secondary.main' }} />
                 <Typography variant="h5">Interests</Typography>
-              </Box>    
-
-{/* OJDEFJIWJFOIWJFIWFWFWF */}
+              </Box>   
             </AccordionSummary>
             <AccordionDetails>
               <Box sx={{ mb: 2 }}>

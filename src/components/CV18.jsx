@@ -11,6 +11,9 @@ import html2canvas from 'html2canvas';
 // Styled components
 const Section = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
+  '@media print': {
+    marginBottom: theme.spacing(1.5),
+  }
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -18,7 +21,19 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   paddingBottom: theme.spacing(1),
   marginBottom: theme.spacing(2),
   textTransform: 'uppercase',
+  '@media print': {
+    paddingBottom: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
+    fontSize: '1.1rem !important',
+  }
 }));
+
+// Print utility style
+const noPrintStyle = {
+  '@media print': {
+    display: 'none'
+  }
+};
 
 // CV Template Component
 const CVTemplate = () => {
@@ -58,7 +73,12 @@ const CVTemplate = () => {
 
   const downloadPDF = () => {
     const input = cvRef.current;
-    html2canvas(input, { scale: 3 }).then(canvas => {
+    html2canvas(input, { 
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      backgroundColor: darkMode ? '#1e1e1e' : '#ffffff'
+    }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgProps = pdf.getImageProperties(imgData);
@@ -70,7 +90,7 @@ const CVTemplate = () => {
     });
   };
 
-  // Sample data
+  // Sample data - FULLY DEFINED
   const cvData = {
     fullName: "John Doe",
     phone: "+1 (123) 456-7890",
@@ -161,8 +181,8 @@ const CVTemplate = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Control Panel */}
+      <Container maxWidth="lg" sx={{ py: 4, '@media print': { py: 0 } }}>
+        {/* Control Panel - hidden during print */}
         <Box sx={{ 
           mb: 4, 
           display: 'flex', 
@@ -172,7 +192,8 @@ const CVTemplate = () => {
           p: 2,
           borderRadius: 1,
           bgcolor: 'background.paper',
-          boxShadow: 1
+          boxShadow: 1,
+          ...noPrintStyle
         }}>
           <Box>
             <Button 
@@ -238,25 +259,44 @@ const CVTemplate = () => {
               height: '100%',
               margin: 0,
               padding: '15mm',
+              '& h1': { fontSize: '1.8rem !important' },
+              '& h2': { fontSize: '1.3rem !important' },
+              '& h3': { fontSize: '1.1rem !important' },
+              '& .MuiTypography-body1': { fontSize: '0.8rem !important' },
+              '& .MuiGrid-item': { padding: '0.25rem !important' },
             }
           }}
         >
           {/* Header */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Box sx={{ 
+            textAlign: 'center', 
+            mb: 4,
+            '@media print': {
+              mb: 2,
+              '& .MuiTypography-h1': { marginBottom: '0.25rem !important' }
+            }
+          }}>
             <Typography variant="h1" gutterBottom>
               {cvData.fullName}
             </Typography>
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ '@media print': { fontSize: '0.75rem !important' } }}>
               {cvData.city}, {cvData.state}, {cvData.country} | 
               {cvData.phone} | 
               {cvData.email}
             </Typography>
-            <Box sx={{ mt: 1 }}>
+            <Box sx={{ mt: 1, '@media print': { mt: 0.5 } }}>
               {cvData.socialLinks.map((link, index) => (
                 <Typography 
                   key={index} 
                   component="span" 
-                  sx={{ mr: 2 }}
+                  sx={{ 
+                    mr: 2,
+                    '@media print': {
+                      mr: 1,
+                      fontSize: '0.7rem !important',
+                      display: 'block'
+                    }
+                  }}
                 >
                   {link.name}: {link.url}
                 </Typography>
@@ -264,7 +304,7 @@ const CVTemplate = () => {
             </Box>
           </Box>
 
-          <Grid container spacing={4}>
+          <Grid container spacing={4} sx={{ '@media print': { spacing: 0 } }}>
             {/* Left Column */}
             <Grid item xs={7}>
               {/* Summary */}
@@ -277,16 +317,20 @@ const CVTemplate = () => {
               <Section>
                 <SectionTitle variant="h2">Professional Experience</SectionTitle>
                 {cvData.experience.map((exp, index) => (
-                  <Box key={index} sx={{ mb: 3 }}>
+                  <Box key={index} sx={{ mb: 3, '@media print': { mb: 1.5 } }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="h3">{exp.title}</Typography>
                       <Typography>{exp.period}</Typography>
                     </Box>
                     <Typography fontStyle="italic">{exp.company}</Typography>
-                    <Typography variant="body1" sx={{ mt: 1 }}>{exp.description}</Typography>
-                    <ul>
+                    <Typography variant="body1" sx={{ mt: 1, '@media print': { mt: 0.5 } }}>
+                      {exp.description}
+                    </Typography>
+                    <ul style={{ marginTop: 4, marginBottom: 4, paddingLeft: 20 }}>
                       {exp.achievements.map((achievement, i) => (
-                        <li key={i}><Typography variant="body1">{achievement}</Typography></li>
+                        <li key={i}>
+                          <Typography variant="body1">{achievement}</Typography>
+                        </li>
                       ))}
                     </ul>
                   </Box>
@@ -297,7 +341,7 @@ const CVTemplate = () => {
               <Section>
                 <SectionTitle variant="h2">Projects</SectionTitle>
                 {cvData.projects.map((project, index) => (
-                  <Box key={index} sx={{ mb: 2 }}>
+                  <Box key={index} sx={{ mb: 2, '@media print': { mb: 1 } }}>
                     <Typography fontWeight="bold">{project.name}</Typography>
                     <Typography variant="body1" fontStyle="italic">{project.technologies}</Typography>
                     <Typography variant="body1">{project.description}</Typography>
@@ -318,7 +362,11 @@ const CVTemplate = () => {
                       sx={{ 
                         p: 1, 
                         bgcolor: 'primary.light', 
-                        color: 'primary.contrastText' 
+                        color: 'primary.contrastText',
+                        '@media print': {
+                          padding: '0.2rem 0.5rem !important',
+                          fontSize: '0.7rem !important'
+                        }
                       }}
                     >
                       {skill}
@@ -331,7 +379,7 @@ const CVTemplate = () => {
               <Section>
                 <SectionTitle variant="h2">Education</SectionTitle>
                 {cvData.education.map((edu, index) => (
-                  <Box key={index} sx={{ mb: 2 }}>
+                  <Box key={index} sx={{ mb: 2, '@media print': { mb: 1 } }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography fontWeight="bold">{edu.degree}</Typography>
                       <Typography>{edu.period}</Typography>
@@ -345,9 +393,11 @@ const CVTemplate = () => {
               {/* Certificates */}
               <Section>
                 <SectionTitle variant="h2">Certificates</SectionTitle>
-                <ul>
+                <ul style={{ marginTop: 4, paddingLeft: 20 }}>
                   {cvData.certificates.map((cert, index) => (
-                    <li key={index}><Typography variant="body1">{cert}</Typography></li>
+                    <li key={index} style={{ marginBottom: 4 }}>
+                      <Typography variant="body1">{cert}</Typography>
+                    </li>
                   ))}
                 </ul>
               </Section>
@@ -385,17 +435,21 @@ const CVTemplate = () => {
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <Typography variant="h3">Achievements</Typography>
-                <ul>
+                <ul style={{ marginTop: 4, paddingLeft: 20 }}>
                   {cvData.achievements.map((achievement, index) => (
-                    <li key={index}><Typography variant="body1">{achievement}</Typography></li>
+                    <li key={index} style={{ marginBottom: 4 }}>
+                      <Typography variant="body1">{achievement}</Typography>
+                    </li>
                   ))}
                 </ul>
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="h3">Awards</Typography>
-                <ul>
+                <ul style={{ marginTop: 4, paddingLeft: 20 }}>
                   {cvData.awards.map((award, index) => (
-                    <li key={index}><Typography variant="body1">{award}</Typography></li>
+                    <li key={index} style={{ marginBottom: 4 }}>
+                      <Typography variant="body1">{award}</Typography>
+                    </li>
                   ))}
                 </ul>
               </Grid>

@@ -4,7 +4,7 @@ import UserForm from './components/UserForm';
 import ProfilePage from './components/ProfilePage';
 import PortfolioForm from './components/PortfolioForm';
 import PortfolioPage from './components/Portfolio7.jsx';
-import Porfolio1 from './components/Porfolio1';
+import Portfolio1 from './components/Portfolio1.jsx';
 import Portfolio2 from './components/Portfolio2';
 import Portfolio3 from './components/Portfolio3';
 import Portfolio4 from './components/Portfolio4';
@@ -25,7 +25,7 @@ import CV12 from './components/CV12.jsx';
 import CV13 from './components/CV13.jsx';
 import CV14 from './components/CV14.jsx';
 import CV15 from './components/CV15.jsx';
-import CV16 from './components/Cv16.jsx';
+import CV16 from './components/CV16.jsx';
 import CV17 from './components/CV17.jsx';
 import CV18 from './components/CV18.jsx';
 import CV19 from './components/CV19.jsx';
@@ -34,17 +34,21 @@ import CV21 from './components/CV21.jsx';
 import CV22 from './components/CV22.jsx';
 import CV23 from './components/CV23.jsx';
 import CVPage from './components/CVform.jsx';
+import Companysite from './components/Companysite.jsx';
+
+import Designpage from './components/Designpage.jsx';
+import Designpreview from './components/Designpreview.jsx';
+import Site2 from './components/Site2.jsx';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<UserForm />} />
       <Route path="/create-user" element={<CreateUser />} />
-      {/* Remove user={userData} or define userData above */}
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/PortfolioForm" element={<PortfolioForm />} />
       <Route path="/PortfolioPage" element={<PortfolioPage />} />
-      <Route path="/Porfolio1" element={<Porfolio1 />} />
+      <Route path="/Portfolio1" element={<Portfolio1 />} />
       <Route path="/Portfolio2" element={<Portfolio2 />} />
       <Route path="/Portfolio3" element={<Portfolio3 />} />
       <Route path="/CV1" element={<CV1 />} />
@@ -73,7 +77,11 @@ function App() {
       <Route path="/CV21" element={<CV21/>} />
       <Route path="/CV22" element={<CV22/>} />
       <Route path="/CV23" element={<CV23/>} />
+      <Route path="/Companysite" element={<Companysite />} />
       <Route path="/CVPage" element={<CVPage/>} />
+      <Route path="/Site2" element={<Site2/>} />
+      <Route path="/Designpage" element={<Designpage/>} />
+      <Route path="/Designpreview/:type/:id" element={<Designpreview/>} />
 
     </Routes>
   );
