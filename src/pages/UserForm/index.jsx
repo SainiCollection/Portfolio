@@ -72,7 +72,6 @@ function UserForm() {
   // 3. Handle form submission
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     console.log("sss", fetchedUser);
-
     try {
       const data = new FormData();
       data.append('firstName', values?.firstName);
@@ -92,8 +91,6 @@ function UserForm() {
       if (values.profilePhoto) {
         data.append('profilePhoto', values?.profilePhoto);
       }
-
-
       const url = isEdit
         ? `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/update-user`
         // ? `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/update-details/${user.userName}`

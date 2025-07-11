@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -15,6 +15,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { useState } from 'react';
 
 
 
@@ -34,6 +36,8 @@ const user1 = {
 };
 
 export default function ProfilePage() {
+  const [hasCV, setHasCV] = useState(false)
+
   const navigate = useNavigate();
   // const user = useSelector(state => state.user);
   const userProfile = useSelector(state => state.userProfile.data);
@@ -46,6 +50,41 @@ export default function ProfilePage() {
     localStorage.removeItem("token")
     navigate("/")
   }
+
+  useEffect(() => {
+    const checkCVExists = async () => {
+      try {
+        const response = await axios.get(
+          `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/cv-details/manoj_d397`
+        );
+        const exists = !!response.data;
+        setHasCV(exists);
+      } catch (error) {
+        console.log("CV does not exist.");
+        setHasCV(false);
+      }
+    };
+
+    checkCVExists();
+  }, []);
+  const handleCVAction = async () => {
+    try {
+      const res = await axios.get(
+        `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/cv-details/manoj_d397`
+      );
+
+      // CV exists — navigate to edit mode using userName
+      navigate('/create-cv?edit=true&user=testing_user', {
+        state: { existingData: res.data }
+      });
+
+    } catch (error) {
+      // No CV — navigate to create mode
+      navigate('/create-cv');
+    }
+  };
+
+
 
 
   // console.log("this is from  ", user.userName);
@@ -186,6 +225,7 @@ export default function ProfilePage() {
         {/* Actions */}
         <Box mt={5} display="flex" justifyContent="center" gap={3}>
           <Button
+            onClick={handleCVAction}
             variant="contained"
             sx={{
               background: 'linear-gradient(to right, #1a73e8, #8e2de2)',
@@ -202,7 +242,7 @@ export default function ProfilePage() {
               },
             }}
           >
-            Create CV
+            {hasCV ? 'Update CV' : 'Create CV'}
           </Button>
           <Button
             variant="contained"

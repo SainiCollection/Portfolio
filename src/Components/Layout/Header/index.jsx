@@ -13,7 +13,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser, clearUser } from '../../../store/features/userSlice';
+import { setUser } from '../../../store/features/userSlice';
 import { setUserProfile } from '../../../store/features/userProfileSlice';
 
 const Header = ({ onNavigate, onToggleSidebar }) => {
@@ -31,12 +31,13 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
   const app_name = process.env.REACT_APP_APP_NAME
   const app_url = process.env.REACT_APP_APP_URL
   const redirect_url = process.env.REACT_APP_REDIRECT_URL
-
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+// !!localStorage.getItem("token")
+  const [isLoggedIn, setIsLoggedIn] = useState(true|!!localStorage.getItem("token"));
   const [searchParams] = useSearchParams();
   const [decodedToken, setDecodedToken] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [hasPortfolio, setHasPortfolio] = useState(null);
+// {null}
+  const [hasPortfolio, setHasPortfolio] = useState(true);
  const navigate = useNavigate()
   const open = Boolean(anchorEl);
 

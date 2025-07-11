@@ -13,6 +13,7 @@ import Practice from '../../pages/Practice';
 import ProfilePage from '../../pages/ProfilePage';
 import CreatePortfolioPage from '../../pages/CreatePortfolioPage';
 import UserForm from '../../pages/UserForm';
+import CreateCvPage from '../../pages/CreateCvPage';
 // import UserProfile from '../../Components/Common/UserProfile';
 // --- Crucial: AppRoutes destructures handleChooseTemplate from its props ---
 const AppRoutes = ({ navigate, handleChooseTemplate, selectedTemplateId, isSidebarOpen }) => {
@@ -39,6 +40,8 @@ const AppRoutes = ({ navigate, handleChooseTemplate, selectedTemplateId, isSideb
         <Route path='/profile' element={<ProfilePage />}/>
         <Route path='/createportfolio' element={<CreatePortfolioPage />}/>
         <Route path='/userform' element={<UserForm />}/>
+        <Route path='/create-cv' element={<CreateCvPage />}/>
+
         {/* <Route path='/userprofile' element={<UserProfile />}/> */}
 
       </Route>
