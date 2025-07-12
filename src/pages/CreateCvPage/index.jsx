@@ -25,7 +25,6 @@ const CreateCvPage = () => {
 
 
   const [formData, setFormData] = useState({
-    // fullName:"",
     userId: userProfile?.fetchedUsed?.userId,   //redux//
     userName: username,
     summary: '',
@@ -83,7 +82,6 @@ const CreateCvPage = () => {
   // Pre-fill data in edit mode
   useEffect(() => {
     if (isEditMode && existingData) {
-      // console.log("Loaded existing data for editing:", existingData);
       setFormData(prev => ({ ...prev, ...existingData }));
     }
   }, [isEditMode, existingData]);
@@ -144,7 +142,7 @@ const CreateCvPage = () => {
 
     try {
       const url = isEditMode
-        ? `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/update-cv/${data.userName}`
+        ? `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/update-cv`
         : `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/create-cv`;
 
       const method = isEditMode ? 'put' : 'post';

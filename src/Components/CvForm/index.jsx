@@ -23,10 +23,10 @@ import {
 import { useSelector } from 'react-redux';
 
 const CvForm = ({ formData, setFormData, onSubmit, isEditMode }) => {
-  console.log("from cvform",formData);
+  console.log("from cvform", formData);
   const userProfile = useSelector(state => state.userProfile.data);
   const username = userProfile?.fetchedUsed?.userName
-  
+
   // alert(isEditMode);
   const [photo, setPhoto] = React.useState(null);
   const [darkMode, setDarkMode] = React.useState(false);
@@ -403,11 +403,9 @@ const CvForm = ({ formData, setFormData, onSubmit, isEditMode }) => {
                 <TextField
                   fullWidth
                   label="Add Skill"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                      addItem('skills', e.target.value.trim());
-                      e.target.value = '';
-                    }
+                  onClick={(e) => {
+                    addItem('skills', e.target.value.trim());
+                    e.target.value = '';
                   }}
                   InputProps={{ style: { color: darkMode ? '#e0e0e0' : 'inherit' } }}
                   InputLabelProps={{ style: { color: darkMode ? '#bbb' : 'inherit' } }}
@@ -797,11 +795,9 @@ const CvForm = ({ formData, setFormData, onSubmit, isEditMode }) => {
                 <TextField
                   fullWidth
                   label="Add Interest"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                      addItem('interests', e.target.value.trim());
-                      e.target.value = '';
-                    }
+                  onClick={(e) => {
+                    addItem('interests', e.target.value.trim());
+                    e.target.value = '';
                   }}
                   InputProps={{ style: { color: darkMode ? '#e0e0e0' : 'inherit' } }}
                   InputLabelProps={{ style: { color: darkMode ? '#bbb' : 'inherit' } }}

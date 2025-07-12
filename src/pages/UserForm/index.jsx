@@ -38,7 +38,11 @@ function UserForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [info, setInfo] = useState();
-
+  const [profileEmail,setProfileEmail]=useState("")
+ 
+useEffect(()=>{
+   setProfileEmail(user?.email)
+},[user?.email])
 
   useEffect(() => {
     console.log("Editing mode:", !!fetchedUser);
@@ -79,7 +83,7 @@ function UserForm() {
       data.append('dob', values?.dob);
       data.append('gender', values.gender);
       data.append('designation', values.designation);
-      data.append('email', values.email);
+      data.append('email', values?.email);
       data.append('phoneNo', Number(values.phoneNo));
       data.append('socialLink', values.socialLink);
       data.append('city', values.city);
@@ -88,7 +92,7 @@ function UserForm() {
       data.append('country', values.country);
       data.append('userName', user.userName);
       data.append('userId', user.id);
-      console.log("getting", user.id);
+      // console.log("getting", user.id);
 
       if (values.profilePhoto) {
         data.append('profilePhoto', values?.profilePhoto);
@@ -102,12 +106,18 @@ function UserForm() {
       const res = await axios[method](url, data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      if (isEdit) {
-        alert("here")
+      if (res.data.status==="success") {
+        alert("doneer")
+        console.log("this is1 ",res.data.user.userName , user.userName);
         const updated = await axios.get(`https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/user-details/${user.userName}`);
         dispatch(setUserProfile(updated.data));
-        console.log("kkk",updated.data);
-        
+        navigate('/profile');
+      }
+      if (isEdit) {
+        // alert("here")
+        const updated = await axios.get(`https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/user-details/${user.userName}`);
+        dispatch(setUserProfile(updated.data));
+        // console.log("kkk",updated.data);/
         navigate('/profile');
       }
       // dispatch(setUserProfile(res.data));
@@ -272,13 +282,13 @@ function UserForm() {
                         <Grid item xs={12}>
                           <TextField
                             fullWidth
-                            label="Email"
+                            // label="Email"
                             name="email"
                             // disabled
-                            value={values.email}
+                            value={profileEmail}
                             onChange={handleChange}
-                            onBlur={handleBlur}
-                            error={touched.email && Boolean(errors.email)}
+                            // onBlur={handleBlur}
+                            error={touched.email &&- Boolean(errors.email)}
                             helperText={touched.email && errors.email}
                           />
                         </Grid>

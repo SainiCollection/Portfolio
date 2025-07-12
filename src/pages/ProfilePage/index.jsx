@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { useState } from 'react';
 import { setUserProfile } from '../../store/features/userProfileSlice';
+import { apiUrl } from '../../utils/common';
+
 
 
 
@@ -39,6 +41,7 @@ const user1 = {
 export default function ProfilePage() {
   const [hasCV, setHasCV] = useState(false)
   const dispatch = useDispatch();
+   console.log("ddd", apiUrl)
 
   const navigate = useNavigate();
   // const user = useSelector(state => state.user);
