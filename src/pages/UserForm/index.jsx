@@ -87,14 +87,15 @@ function UserForm() {
       data.append('pinCode', Number(values.pinCode));
       data.append('country', values.country);
       data.append('userName', user.userName);
-      data.append('userId', Number(user.id));
+      data.append('userId', user.id);
+      console.log("getting", user.id);
+
       if (values.profilePhoto) {
         data.append('profilePhoto', values?.profilePhoto);
       }
       const url = isEdit
-        ? `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/update-user`
-        // ? `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/update-details/${user.userName}`
-        : `https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/register`
+        ? `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/update-user`
+        : `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/register`
 
       const method = isEdit ? 'put' : 'post';
 
@@ -102,11 +103,15 @@ function UserForm() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (isEdit) {
-        const updated = await axios.get(`https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/user-details/${user.userName}`);
+        alert("here")
+        const updated = await axios.get(`https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/user-details/${user.userName}`);
         dispatch(setUserProfile(updated.data));
+        console.log("kkk",updated.data);
+        
+        navigate('/profile');
       }
-
-      dispatch(setUserProfile(res.data));
+      // dispatch(setUserProfile(res.data));
+      console.log("this is ressssssssssss", res.data);
       navigate('/profile');
       setSuccess(true);
       setError('');

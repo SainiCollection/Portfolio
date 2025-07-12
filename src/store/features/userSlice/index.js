@@ -4,7 +4,7 @@ const initialState = {
   userName: '',
   email: '',
   id: '',
-  userId:''
+  // userId:''
 };
 
 const userSlice = createSlice({
@@ -15,7 +15,7 @@ const userSlice = createSlice({
       state.userName = action.payload.userName;
       state.email = action.payload.email;
       state.id = action.payload.id;
-      state.userId = action.payload.userId;
+      // state.userId = action.payload.userId;
     },
     clearUser(state) {
       state.userName = '';

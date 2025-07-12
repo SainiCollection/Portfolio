@@ -14,17 +14,20 @@ import { useSelector } from 'react-redux';
 
 const CreateCvPage = () => {
   const userProfile = useSelector(state => state.userProfile.data);
-
+  const username = userProfile?.fetchedUsed?.userName
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
   const isEditMode = searchParams.get('edit') === 'true';
   const userNameFromQuery = searchParams.get('user'); // comes from query param if any
   const existingData = location.state?.existingData || null;
+  console.log("this is from allllll", userProfile, username);
+
 
   const [formData, setFormData] = useState({
-    userId: userProfile?.fetchedUsed?.id||18,   //redux//
-    userName: userNameFromQuery || 'manoj_397',
+    // fullName:"",
+    userId: userProfile?.fetchedUsed?.userId,   //redux//
+    userName: username,
     summary: '',
     socialLinks: [{ platform: 'LinkedIn', url: '' }],
     experience: [{
@@ -80,7 +83,7 @@ const CreateCvPage = () => {
   // Pre-fill data in edit mode
   useEffect(() => {
     if (isEditMode && existingData) {
-      console.log("Loaded existing data for editing:", existingData);
+      // console.log("Loaded existing data for editing:", existingData);
       setFormData(prev => ({ ...prev, ...existingData }));
     }
   }, [isEditMode, existingData]);
@@ -127,7 +130,7 @@ const CreateCvPage = () => {
   const handleSubmitCv = async (data) => {
     const cleanedData = {
       ...data,
-      userId: userProfile?.fetchedUsed?.id||18,  //redux//
+      userId: userProfile?.fetchedUsed?.userId,  //redux//
       skills: data.skills || [],
       interests: data.interests || [],
       achievements: data.achievements || [],

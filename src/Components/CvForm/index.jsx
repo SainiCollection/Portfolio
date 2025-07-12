@@ -20,8 +20,13 @@ import {
   Favorite as FavoriteIcon,
   EmojiEvents as EmojiEventsIcon
 } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 
 const CvForm = ({ formData, setFormData, onSubmit, isEditMode }) => {
+  console.log("from cvform",formData);
+  const userProfile = useSelector(state => state.userProfile.data);
+  const username = userProfile?.fetchedUsed?.userName
+  
   // alert(isEditMode);
   const [photo, setPhoto] = React.useState(null);
   const [darkMode, setDarkMode] = React.useState(false);
@@ -104,9 +109,10 @@ const CvForm = ({ formData, setFormData, onSubmit, isEditMode }) => {
               <Grid item xs={12} md={8}>
                 <TextField
                   fullWidth
-                  label="Full Name"
-                  value={formData.userName}
+                  label="username"
+                  value={username}
                   onChange={handleChange('userName')}
+                  disabled
                   required
                   sx={{ mb: 2 }}
                   InputProps={{ style: { color: darkMode ? '#e0e0e0' : 'inherit' } }}

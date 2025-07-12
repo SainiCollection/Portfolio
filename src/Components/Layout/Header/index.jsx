@@ -6,7 +6,7 @@ import React, { use, useEffect, useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu'; // Hamburger icon for sidebar toggle
 import DescriptionIcon from '@mui/icons-material/Description'; // Icon for "Resume Now." logo
-import { Link,useNavigate, useSearchParams } from 'react-router-dom'; // Import useNavigate hook
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'; // Import useNavigate hook
 import { jwtDecode } from "jwt-decode"
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -31,19 +31,19 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
   const app_name = process.env.REACT_APP_APP_NAME
   const app_url = process.env.REACT_APP_APP_URL
   const redirect_url = process.env.REACT_APP_REDIRECT_URL
-// !!localStorage.getItem("token")
-  const [isLoggedIn, setIsLoggedIn] = useState(true|!!localStorage.getItem("token"));
+  // !!localStorage.getItem("token")
+  const [isLoggedIn, setIsLoggedIn] = useState( !!localStorage.getItem("token") );
   const [searchParams] = useSearchParams();
   const [decodedToken, setDecodedToken] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-// {null}
-  const [hasPortfolio, setHasPortfolio] = useState(true);
- const navigate = useNavigate()
+  // {null}
+  const [hasPortfolio, setHasPortfolio] = useState(null);
+  const navigate = useNavigate()
   const open = Boolean(anchorEl);
 
   // const [data, setData] = useState("jatin_451");
 
-  // console.log(decodedToken?.userName, decodedToken?.email, decodedToken?.id);
+  console.log(decodedToken?.userName, decodedToken?.email, decodedToken?.id);
   //////////
 
   // useEffect(() => {
@@ -70,7 +70,7 @@ const Header = ({ onNavigate, onToggleSidebar }) => {
     if (isLoggedIn && decodedToken?.userName) {
       const fetchUser = async () => {
         try {
-          const user = await axios.get(`https://portfoliobackend-ol8m.onrender.com/api/v1/portfolio/user-details/${decodedToken?.userName}`);
+          const user = await axios.get(`https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/user-details/${decodedToken?.userName}`);
           dispatch(setUserProfile(user.data)); // store all payload data in redux
 
           if (user) {

@@ -14,9 +14,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import EditIcon from '@mui/icons-material/Edit';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { useState } from 'react';
+import { setUserProfile } from '../../store/features/userProfileSlice';
 
 
 
@@ -37,10 +38,13 @@ const user1 = {
 
 export default function ProfilePage() {
   const [hasCV, setHasCV] = useState(false)
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   // const user = useSelector(state => state.user);
   const userProfile = useSelector(state => state.userProfile.data);
+  const username = userProfile?.fetchedUsed?.userName
+
   // console.log("ttttttt", userProfile.fetchedUsed.profilePhoto);
 
   const editProfile = () => {
@@ -50,12 +54,25 @@ export default function ProfilePage() {
     localStorage.removeItem("token")
     navigate("/")
   }
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const updated = await axios.get(`https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/user-details/${username}`);
+        dispatch(setUserProfile(updated.data));
+      } catch (error) {
+        console.log("thi is profile fetching erropeer", error);
+
+      }
+
+    }
+    fetchProfile()
+  }, [username])
 
   useEffect(() => {
     const checkCVExists = async () => {
       try {
         const response = await axios.get(
-          `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/cv-details/manoj_d397`
+          `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/cv-details/${username}`
         );
         const exists = !!response.data;
         setHasCV(exists);
@@ -70,7 +87,7 @@ export default function ProfilePage() {
   const handleCVAction = async () => {
     try {
       const res = await axios.get(
-        `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/cv-details/manoj_d397`
+        `https://portfoliobackend-tpdr.onrender.com/api/v1/portfolio/cv-details/${username}`
       );
 
       // CV exists — navigate to edit mode using userName
@@ -261,7 +278,6 @@ export default function ProfilePage() {
               '&:hover': {
                 // background: 'linear-gradient(to right, #4a5bb5, #8e21d1)',
                 background: 'linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)',
-
                 boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
               },
             }}
