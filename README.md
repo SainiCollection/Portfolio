@@ -68,3 +68,22 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+
+
+<!-- 1.protectedroute is true remove it later   -->
+<!-- 2.change hasportfolipo to null -->
+<!-- .3 islogedin to !!localStorage.getItem("token") this  -->
+
+
+<!-- // !!localStorage.getItem("token")
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [searchParams] = useSearchParams();
+  const [decodedToken, setDecodedToken] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+// {null}
+  const [hasPortfolio, setHasPortfolio] = useState(true);
+ const navigate = useNavigate()
+  const open = Boolean(anchorEl); -->
